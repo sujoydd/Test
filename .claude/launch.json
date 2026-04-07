@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "knowledge-article-prototype",
+      "runtimeExecutable": "C:\\Users\\sdatta\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "runtimeArgs": ["-m", "http.server", "3456", "--directory", "C:/Users/sdatta/OneDrive - NICE Ltd/Documents/Claude Code/prototype"],
+      "port": 3456
+    }
+  ]
+}
