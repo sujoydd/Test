@@ -11,7 +11,7 @@
 
     /* TOP NAV */
     .topbar {
-      background: #1a2a6c;
+      background: #1a5c2a;
       color: #fff;
       display: flex;
       align-items: center;
@@ -23,7 +23,7 @@
     .topbar-left { display: flex; align-items: center; gap: 12px; }
     .topbar-logo { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px; }
     .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 13px; }
-    .avatar { background: #4a90d9; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+    .avatar { background: #4ab870; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
 
     /* TABS */
     .tabs {
@@ -43,17 +43,17 @@
       border-bottom: 2px solid transparent;
       transition: all 0.15s;
     }
-    .tab.active { color: #1a2a6c; border-bottom-color: #1a2a6c; font-weight: 600; }
-    .tab:hover:not(.active) { color: #1a2a6c; background: #f5f7ff; }
+    .tab.active { color: #1a5c2a; border-bottom-color: #1a5c2a; font-weight: 600; }
+    .tab:hover:not(.active) { color: #1a5c2a; background: #f2f8f4; }
     .ai-chip {
       margin-left: auto;
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: #4a90d9;
+      color: #2e9e52;
       padding: 6px 12px;
-      background: #eef4ff;
+      background: #eef8f1;
       border-radius: 20px;
     }
 
@@ -69,8 +69,8 @@
       flex-shrink: 0;
     }
     .sidebar-item { padding: 10px 20px; font-size: 13px; color: #444; cursor: pointer; }
-    .sidebar-item.active { background: #eef4ff; color: #1a2a6c; font-weight: 600; }
-    .sidebar-item:hover:not(.active) { background: #f5f7ff; }
+    .sidebar-item.active { background: #eef8f1; color: #1a5c2a; font-weight: 600; }
+    .sidebar-item:hover:not(.active) { background: #f2f8f4; }
 
     /* ARTICLE EDITOR */
     .editor-panel { flex: 1; padding: 24px; overflow-y: auto; background: #f0f2f5; }
@@ -88,52 +88,52 @@
     .article-date { font-size: 12px; color: #888; }
     .btn-cancel { background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 6px 14px; font-size: 13px; cursor: pointer; color: #444; }
     .btn-cancel:hover { background: #f5f5f5; }
-    .btn-publish { background: #1a2a6c; color: #fff; border: none; border-radius: 6px; padding: 6px 16px; font-size: 13px; cursor: pointer; }
-    .btn-publish:hover { background: #243a8a; }
+    .btn-publish { background: #1a5c2a; color: #fff; border: none; border-radius: 6px; padding: 6px 16px; font-size: 13px; cursor: pointer; }
+    .btn-publish:hover { background: #236b34; }
     .btn-group { display: flex; gap: 8px; }
-    .ai-badge { display: flex; align-items: center; gap: 6px; background: #f0f4ff; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #4a6cf7; margin-bottom: 16px; }
+    .ai-badge { display: flex; align-items: center; gap: 6px; background: #f0f8f2; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #2e9e52; margin-bottom: 16px; }
     .article-title-small { font-size: 13px; color: #333; font-weight: 500; margin-bottom: 12px; }
-    .article-body h1 { font-size: 20px; color: #1a2a6c; margin-bottom: 10px; }
+    .article-body h1 { font-size: 20px; color: #1a5c2a; margin-bottom: 10px; }
     .article-body p { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 12px; }
     .article-body h3 { font-size: 14px; color: #222; margin-bottom: 8px; }
     .article-body ul, .article-body ol { padding-left: 20px; font-size: 13px; color: #444; line-height: 2; }
     .article-toolbar { display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee; }
-    .icon-btn { background: #f5f7ff; border: 1px solid #dde1ea; border-radius: 6px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #4a6cf7; }
-    .icon-btn:hover { background: #e0e8ff; }
+    .icon-btn { background: #f2f8f4; border: 1px solid #dde1ea; border-radius: 6px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #2e9e52; }
+    .icon-btn:hover { background: #c8ecd2; }
 
     /* CHAT PANEL */
     .chat-panel { width: 360px; background: #fff; border-left: 1px solid #dde1ea; display: flex; flex-direction: column; flex-shrink: 0; }
     .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 
-    .msg-user { background: #f0f4ff; border-radius: 10px 10px 2px 10px; padding: 10px 14px; font-size: 13px; color: #222; align-self: flex-end; max-width: 85%; }
+    .msg-user { background: #f0f8f2; border-radius: 10px 10px 2px 10px; padding: 10px 14px; font-size: 13px; color: #222; align-self: flex-end; max-width: 85%; }
     .msg-ai { background: #f9f9f9; border: 1px solid #e8eaf0; border-radius: 10px 10px 10px 2px; padding: 10px 14px; font-size: 13px; color: #222; align-self: flex-start; max-width: 90%; }
-    .msg-ai .ai-icon { font-size: 15px; margin-bottom: 4px; color: #4a6cf7; }
+    .msg-ai .ai-icon { font-size: 15px; margin-bottom: 4px; color: #2e9e52; }
     .msg-error { background: #fff5f5; border: 1px solid #ffc2c2; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #c0392b; align-self: flex-start; max-width: 90%; display: flex; align-items: flex-start; gap: 8px; }
     .msg-success { background: #f0fff4; border: 1px solid #b2dfdb; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #1b5e20; align-self: flex-start; max-width: 90%; display: flex; align-items: center; gap: 8px; }
     .msg-timestamp { font-size: 10px; color: #aaa; text-align: right; margin-top: 4px; }
 
     /* Disambiguation card */
-    .msg-disambig { background: #fff; border: 1.5px solid #4a6cf7; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #222; align-self: flex-start; max-width: 95%; }
-    .msg-disambig .disambig-header { display: flex; align-items: center; gap: 6px; font-weight: 600; color: #1a2a6c; margin-bottom: 6px; }
+    .msg-disambig { background: #fff; border: 1.5px solid #2e9e52; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #222; align-self: flex-start; max-width: 95%; }
+    .msg-disambig .disambig-header { display: flex; align-items: center; gap: 6px; font-weight: 600; color: #1a5c2a; margin-bottom: 6px; }
     .msg-disambig p { font-size: 12.5px; color: #555; margin-bottom: 10px; line-height: 1.5; }
     .disambig-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .btn-disambig { border-radius: 6px; padding: 7px 14px; font-size: 12px; cursor: pointer; font-weight: 600; transition: all 0.15s; border: 1.5px solid; }
-    .btn-replace { background: #1a2a6c; color: #fff; border-color: #1a2a6c; }
-    .btn-replace:hover { background: #243a8a; }
-    .btn-new { background: #fff; color: #1a2a6c; border-color: #1a2a6c; }
-    .btn-new:hover { background: #eef4ff; }
+    .btn-replace { background: #1a5c2a; color: #fff; border-color: #1a5c2a; }
+    .btn-replace:hover { background: #236b34; }
+    .btn-new { background: #fff; color: #1a5c2a; border-color: #1a5c2a; }
+    .btn-new:hover { background: #eef8f1; }
     .btn-keep { background: #fff; color: #888; border-color: #ccc; }
     .btn-keep:hover { background: #f5f5f5; }
 
     /* Chat input */
     .chat-input-area { border-top: 1px solid #dde1ea; padding: 12px; display: flex; gap: 8px; align-items: flex-end; }
-    .chat-input-wrap { flex: 1; border: 1.5px solid #dde1ea; border-radius: 8px; display: flex; align-items: center; padding: 6px 10px; gap: 6px; background: #fafbff; }
-    .chat-input-wrap:focus-within { border-color: #4a6cf7; }
+    .chat-input-wrap { flex: 1; border: 1.5px solid #dde1ea; border-radius: 8px; display: flex; align-items: center; padding: 6px 10px; gap: 6px; background: #f5fbf7; }
+    .chat-input-wrap:focus-within { border-color: #2e9e52; }
     .chat-input { flex: 1; border: none; outline: none; font-size: 13px; background: transparent; color: #222; }
     .chat-input::placeholder { color: #aaa; }
-    .spark-icon { color: #4a6cf7; font-size: 16px; }
-    .send-btn { background: #1a2a6c; border: none; border-radius: 8px; width: 36px; height: 36px; color: #fff; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-    .send-btn:hover { background: #243a8a; }
+    .spark-icon { color: #2e9e52; font-size: 16px; }
+    .send-btn { background: #1a5c2a; border: none; border-radius: 8px; width: 36px; height: 36px; color: #fff; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .send-btn:hover { background: #236b34; }
     .char-count { font-size: 10px; color: #bbb; text-align: right; margin-top: 2px; padding-right: 16px; padding-bottom: 4px; }
 
     /* Scenario bar */
@@ -176,7 +176,7 @@
   <div class="tab">Email</div>
   <div class="tab active">Knowledge Article</div>
   <div class="tab">Followed Charts</div>
-  <div class="ai-chip">✦ AI Insights &nbsp;<strong style="color:#1a2a6c;">AO: 97.37% ↑</strong></div>
+  <div class="ai-chip">✦ AI Insights &nbsp;<strong style="color:#1a5c2a;">AO: 97.37% ↑</strong></div>
 </div>
 
 <!-- MAIN -->
@@ -311,7 +311,7 @@
 
       <!-- Step 5 messages -->
       <div id="step5-msgs" class="hidden">
-        <div class="msg-success" style="background:#f0f4ff;border-color:#b3c6ff;color:#1a2a6c;">
+        <div class="msg-success" style="background:#f0f8f2;border-color:#a3d4b0;color:#1a5c2a;">
           <span>📄</span>
           <span>Got it! I've saved the current article as a draft and opened a new editor for <strong>"Cancel an order"</strong>.</span>
         </div>
