@@ -73,6 +73,27 @@ action.
 - **Unverified (fail-open):** enabled button + amber `alert-triangle` "Unverified access" badge alongside; tooltip:
   *"Couldn't verify your Cognigy access — the link may not work."*
 
+## Visual fidelity — matched against the live screen
+
+A real screenshot of the current AI Agent Details page was reviewed and the prototype was reworked to match it
+precisely, since it goes to developers who need to recognize their own screen:
+
+- Purple→pink gradient title (`Topic: <name>`), single breadcrumb ("Automation Opportunities" with a panel icon, no
+  second crumb level).
+- `Project Name:` dropdown with the **Publish AI Agent** button inline beside it (not stacked below).
+- All metadata on **one line**: `Created By: X | Creation Date: Y | Status: [badge] <published date> [icon] Open
+  published AI agent ▾` — matches the live layout exactly, no separate rows.
+- Dropdown header reads `Published Versions (N)`.
+
+**Dropdown row content — decision:** rows stay visually the same as today (date + icon only) — **no project name label
+is added to the row**. The access reason (which project, why it's blocked) surfaces **only in the tooltip** on
+hover/focus of a disabled or unverified row, not as new persistent row text. This keeps the change minimal and
+consistent with the existing row format; only the icon/color state and the tooltip differ:
+- Accessible → `Eye` icon, normal color (unchanged from today).
+- No access → `Eye` icon muted, row disabled, tooltip names the project.
+- Unverified (fail-open) → `AlertTriangle` icon (the one deliberate icon change, needed so the three states stay
+  distinguishable without added text), tooltip explains the check failed.
+
 ## Prototype structure (single self-contained `.html` file)
 
 File: `prototype/ao-open-published-project-check.html`
