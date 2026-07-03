@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open published AI agent — project-access check (CSA-86274)</title>
+  <link rel="stylesheet" href="c26/colors_and_type.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --blue: #126BCE;
+      --blue-soft: #E5F2FF;
+      --border: #E5E7EB;
+      --border-strong: #D1D5DB;
+      --n400: #6B7280;
+      --n700: #1F2937;
+      --n800: #111827;
+      --amber: #B45309;
+      --amber-bg: #FEF3C7;
+      --amber-border: #FCD34D;
+      --page-bg: #F9FAFB;
+      --radius-lg: 12px;
+      --radius-md: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--page-bg);
+      color: var(--n800);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 24px 96px; }
+
+    .doc-head { margin: 8px 0 20px; }
+    .doc-head h1 { font-size: 24px; line-height: 32px; margin: 0 0 6px; font-weight: 600; }
+    .doc-head p { margin: 0; color: var(--n400); max-width: 760px; }
+    .ticket-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 500; color: var(--blue);
+      background: var(--blue-soft); border-radius: 9999px; padding: 3px 10px; margin-bottom: 10px;
+    }
+
+    /* ---------- Simulation panel ---------- */
+    .sim {
+      position: sticky; top: 0; z-index: 40;
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06); padding: 16px 20px; margin-bottom: 28px;
+    }
+    .sim-row { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+    /* On narrow viewports the three blocks stack and the panel gets tall — don't
+       let a tall panel pin over the content; only stick where it stays compact. */
+    @media (max-width: 940px) { .sim { position: static; } }
+    .sim-block { display: flex; flex-direction: column; gap: 8px; }
+    .sim-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--n400); }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none;
+      border: 1px solid var(--border-strong); background: #fff; color: var(--n700);
+      border-radius: 9999px; padding: 6px 13px 6px 11px; font-size: 13px; font-weight: 500;
+      transition: all .12s ease;
+    }
+    .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); transition: all .12s ease; }
+    .chip[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+    .chip[aria-pressed="true"] .dot { background: var(--blue); }
+    .chip .lucide { width: 14px; height: 14px; }
+
+    .seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--radius-md); overflow: hidden; }
+    .seg button {
+      font: inherit; font-size: 13px; font-weight: 500; border: 0; background: #fff; color: var(--n700);
+      padding: 7px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .seg button + button { border-left: 1px solid var(--border-strong); }
+    .seg button[aria-pressed="true"] { background: var(--blue-soft); color: var(--blue); }
+    .seg button.warn[aria-pressed="true"] { background: var(--amber-bg); color: var(--amber); }
+    .seg .lucide { width: 14px; height: 14px; }
+
+    .sim-note { font-size: 12px; color: var(--n400); margin-top: 2px; }
+    .sim-note code { font-family: "DM Mono", ui-monospace, monospace; font-size: 11px; background: #F3F4F6; padding: 1px 5px; border-radius: 4px; color: var(--n700); }
+
+    /* ---------- Section scaffolding ---------- */
+    .section { margin-bottom: 34px; }
+    .section-head { display: flex; align-items: baseline; gap: 10px; margin: 0 0 14px; }
+    .section-head h2 { font-size: 16px; font-weight: 600; margin: 0; }
+    .section-head .tag { font-size: 11px; font-weight: 600; color: var(--n400); background: #F3F4F6; border-radius: 6px; padding: 2px 8px; }
+    .section > p.lede { margin: -6px 0 16px; color: var(--n400); max-width: 820px; }
+
+    /* ---------- Details page recreation ---------- */
+    .surface { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 14px 32px 0; }
+    .breadcrumb .lucide { width: 15px; height: 15px; color: var(--n700); }
+    .breadcrumb a { color: var(--blue); font-weight: 500; text-decoration: none; }
+    .agent-header { border-bottom: 1px solid var(--border); padding: 16px 32px 20px; }
+    .agent-header h1 { font-size: 30px; line-height: 38px; letter-spacing: -.08px; font-weight: 700; margin: 8px 0 16px;
+      background: linear-gradient(90deg, #8B5CF6 0%, #EC4899 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .field-label { font-weight: 500; color: #000; display: block; margin-bottom: 8px; }
+    .select-mimic {
+      width: 324px; max-width: 100%; height: 36px; border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+      background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; color: var(--n800); font-size: 14px;
+    }
+    .select-mimic .lucide { width: 16px; height: 16px; color: var(--n400); }
+    .project-row { display: flex; align-items: flex-end; gap: 16px; }
+    .btn-publish {
+      height: 36px; padding: 0 16px; border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+      background: #fff; color: var(--n800); font: inherit; font-size: 14px; font-weight: 500; cursor: default;
+    }
+    .meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; font-size: 14px; }
+    .meta-row .sep { color: #D1D5DB; }
+    .meta-row .k { font-weight: 500; color: #000; }
+    .badge {
+      display: inline-flex; align-items: center; border-radius: 9999px; padding: 2px 10px; font-size: 13px; font-weight: 500;
+      background: var(--blue-soft); color: var(--blue); border: 1px solid transparent;
+    }
+
+    /* ---------- The Open-published control ---------- */
+    .open-ctl { position: relative; display: inline-flex; align-items: center; gap: 8px; }
+
+    /* ghost link/button — enabled member state */
+    .btn-open {
+      font: inherit; font-size: 14px; font-weight: 400; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; border: 0; color: var(--blue); border-radius: var(--radius-md);
+      height: 28px; padding: 4px 8px;
+    }
+    .btn-open:hover { color: var(--blue); text-decoration: underline; }
+    .btn-open .lucide { width: 16px; height: 16px; }
+
+    /* disabled state */
+    .btn-open.is-disabled { color: #9CA3AF; cursor: not-allowed; pointer-events: none; text-decoration: none; }
+    /* wrapper still receives hover so tooltip fires */
+    .ctl-wrap { display: inline-flex; }
+
+    /* unverified (fail-open) marker */
+    .unverified {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500;
+      color: var(--amber); background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: 9999px; padding: 2px 9px;
+    }
+    .unverified .lucide { width: 13px; height: 13px; }
+
+    /* tooltip */
+    .tt { position: relative; display: inline-flex; }
+    .tt > .tip {
+      position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 50;
+      background: var(--n800); color: #fff; font-size: 12px; font-weight: 400; line-height: 16px;
+      padding: 8px 10px; border-radius: 6px; width: max-content; max-width: 300px;
+      opacity: 0; visibility: hidden; transform: translateY(3px); transition: all .12s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18); pointer-events: none;
+    }
+    .tt > .tip::after { content: ""; position: absolute; top: 100%; left: 18px; border: 5px solid transparent; border-top-color: var(--n800); }
+    .tt:hover > .tip, .tt:focus-within > .tip { opacity: 1; visibility: visible; transform: translateY(0); }
+    .tip b { color: #fff; }
+
+    /* dropdown */
+    .dd { position: relative; }
+    .dd-panel {
+      position: absolute; top: calc(100% + 4px); left: 0; z-index: 45; width: 288px;
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.14); padding: 6px; display: none;
+    }
+    .dd-panel.open { display: block; }
+    .dd-header { font-size: 12px; font-weight: 500; color: var(--n700); padding: 6px 8px 8px; }
+    .dd-header.warn { color: var(--amber); display: flex; align-items: flex-start; gap: 6px; }
+    .dd-header.warn .lucide { width: 14px; height: 14px; margin-top: 1px; flex-shrink: 0; }
+    .dd-sep { height: 1px; background: var(--border); margin: 2px 0; }
+    .dd-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: #000;
+    }
+    .dd-item:hover { background: #F3F4F6; }
+    .dd-item .ver-date { font-size: 13px; color: #000; }
+    .dd-item .lucide { width: 16px; height: 16px; color: var(--n400); flex-shrink: 0; }
+    .dd-item.is-disabled { cursor: not-allowed; }
+    .dd-item.is-disabled:hover { background: transparent; }
+    .dd-item.is-disabled .ver-date { color: #B0B4BB; }
+    .dd-item.is-disabled .lucide { color: #D1D5DB; }
+    .dd-item.is-unverified:hover { background: transparent; }
+    .dd-item.is-unverified .lucide { color: var(--amber); }
+
+    /* ---------- States reference strip ---------- */
+    .states { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+    .state-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 150px; }
+    .state-card .sc-num { font-size: 11px; font-weight: 700; color: var(--blue); }
+    .state-card .sc-title { font-size: 13px; font-weight: 600; }
+    .state-card .sc-desc { font-size: 12px; color: var(--n400); line-height: 16px; }
+    .state-card .sc-ctl { margin-top: auto; padding-top: 6px; border-top: 1px dashed var(--border); }
+
+    /* ---------- Dashboard cards ---------- */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .agent-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 18px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px; }
+    .agent-card .tagline { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: .03em; }
+    .agent-card h3 { font-size: 17px; font-weight: 600; margin: 0; }
+    .agent-card .row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--n700); }
+    .agent-card .row .k { color: var(--n400); }
+    .agent-card .footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+    /* ---------- Notes ---------- */
+    details.notes { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 4px 20px; }
+    details.notes summary { cursor: pointer; font-weight: 600; padding: 12px 0; list-style: none; display: flex; align-items: center; gap: 8px; }
+    details.notes summary::-webkit-details-marker { display: none; }
+    details.notes summary .lucide { width: 16px; height: 16px; transition: transform .15s; }
+    details.notes[open] summary .lucide { transform: rotate(90deg); }
+    .qa { padding: 10px 0; border-top: 1px solid var(--border); }
+    .qa .q { font-weight: 500; margin-bottom: 4px; display: flex; align-items: flex-start; gap: 8px; }
+    .qa .a { color: var(--n700); margin-left: 26px; }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; border-radius: 9999px; padding: 2px 9px; flex-shrink: 0; }
+    .status-badge.answered { background: #DCFCE7; color: #166534; }
+    .status-badge.open { background: var(--amber-bg); color: var(--amber); }
+    .status-badge .lucide { width: 12px; height: 12px; }
+
+    .callout { font-size: 12px; color: var(--n400); background: #fff; border: 1px dashed var(--border-strong); border-radius: var(--radius-md); padding: 10px 12px; margin-top: 12px; display: flex; gap: 8px; align-items: flex-start; }
+    .callout .lucide { width: 15px; height: 15px; color: var(--blue); flex-shrink: 0; margin-top: 1px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="doc-head">
+    <span class="ticket-pill"><i data-lucide="git-pull-request"></i> CSA-86274 · Prototype</span>
+    <h1>“Open published AI agent” — AI Agents project-access check</h1>
+    <p>The button opens the published agent in AI Agents, where access is granted <b>per project</b>. This prototype gates the action on whether you belong to each version’s project — reusing the same membership data that populates the Project Name dropdown — instead of the weaker “did I create it?” check. Toggle your memberships below and watch every control react.</p>
+  </div>
+
+  <!-- ============ SIMULATION PANEL ============ -->
+  <div class="sim">
+    <div class="sim-row">
+      <div class="sim-block">
+        <span class="sim-label">Your AI Agents project memberships</span>
+        <div class="chips" id="membership-chips">
+          <button class="chip" data-project="Billing Ops" aria-pressed="true"><span class="dot"></span>Billing Ops</button>
+          <button class="chip" data-project="Retention Team" aria-pressed="false"><span class="dot"></span>Retention Team</button>
+          <button class="chip" data-project="Onboarding" aria-pressed="false"><span class="dot"></span>Onboarding</button>
+        </div>
+        <div class="sim-note">Simulated stand-in for <code>fetchCognigyProjects()</code> — the same source as the Project Name dropdown. Toggle a project on = you’re a member.</div>
+      </div>
+      <div class="sim-block">
+        <span class="sim-label">Membership check</span>
+        <div class="seg" id="failmode-seg">
+          <button data-mode="ok" aria-pressed="true"><i data-lucide="check"></i>Working</button>
+          <button class="warn" data-mode="fail" aria-pressed="false"><i data-lucide="alert-triangle"></i>Failing (fail-open)</button>
+        </div>
+        <div class="sim-note">Fail-open: if the check can’t run, controls stay enabled but marked <b>unverified</b>.</div>
+      </div>
+      <div class="sim-block">
+        <span class="sim-label">Details-page agent</span>
+        <div class="seg" id="versioncount-seg">
+          <button data-count="1" aria-pressed="true">1 version</button>
+          <button data-count="3" aria-pressed="false">3 versions</button>
+        </div>
+        <div class="sim-note">Switch the Scenario&nbsp;1 agent between a single link and a multi-project dropdown.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENARIO 1 — DETAILS PAGE ============ -->
+  <div class="section">
+    <div class="section-head"><h2>Scenario 1 — AI Agent Details page</h2><span class="tag">recreates ViewAgentHeader</span></div>
+    <p class="lede">The real header layout. The status stays <b>Published</b> regardless of access — only the <b>Open published AI agent</b> action is gated. Dropdown rows keep today's date + icon format; the project and access reason surface only in the tooltip, so the change stays minimal against the live UI.</p>
+    <div class="surface">
+      <div class="breadcrumb">
+        <i data-lucide="panel-left"></i><a href="#">Automation Opportunities</a>
+      </div>
+      <div class="agent-header">
+        <h1 id="dp-title">Topic: Bill Explanation</h1>
+
+        <div class="project-row">
+          <div>
+            <span class="field-label">Project Name:</span>
+            <div class="select-mimic" id="dp-project"><span>Billing Ops</span><i data-lucide="chevron-down"></i></div>
+          </div>
+          <button class="btn-publish" title="Not part of this prototype">Publish AI Agent</button>
+        </div>
+
+        <div class="meta-row">
+          <span><span class="k">Created By:</span> Sarah Chen</span>
+          <span class="sep">|</span>
+          <span><span class="k">Creation Date:</span> Jun 12, 2026 3:15 PM</span>
+          <span class="sep">|</span>
+          <span class="k">Status:</span> <span class="badge">Published</span> <span>Jun 12, 2026 3:20 PM</span>
+          <span class="sep">|</span>
+          <span id="dp-control"><!-- open-published control injected here --></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STATES REFERENCE ============ -->
+  <div class="section">
+    <div class="section-head"><h2>All states, side by side</h2><span class="tag">live reference</span></div>
+    <p class="lede">Every state driven by your toggles above. Enabled · disabled + tooltip · dropdown with per-row access · unverified.</p>
+    <div class="states" id="states-strip"><!-- injected --></div>
+  </div>
+
+  <!-- ============ SCENARIO 2 — DASHBOARD CARDS ============ -->
+  <div class="section">
+    <div class="section-head"><h2>Scenario 2 — dashboard cards (access ≠ authorship)</h2><span class="tag">the point of Option B</span></div>
+    <p class="lede">Each card was published by a <b>different person</b> to a <b>different project</b>. Toggle on a project you didn’t create — the button still enables. That’s the false negative the “did I publish it?” check would cause.</p>
+    <div class="cards" id="cards-strip"><!-- injected --></div>
+    <div class="callout"><i data-lucide="lightbulb"></i><span>Try it: turn on <b>Retention Team</b>. The “Cancel Subscription” agent — published by Marcus Lee, not you — becomes openable. The ticket’s original “creator == me” rule would have kept it hidden.</span></div>
+  </div>
+
+  <!-- ============ NOTES ============ -->
+  <div class="section">
+    <details class="notes">
+      <summary><i data-lucide="chevron-right"></i> Notes &amp; open questions for stakeholders</summary>
+      <div class="qa">
+        <div class="q"><span class="status-badge answered"><i data-lucide="check"></i>Answered</span> Is “my AI Agents projects” data already available on this page?</div>
+        <div class="a"><b>Yes.</b> <code style="font-family:'DM Mono',monospace;font-size:11px">fetchCognigyProjects()</code> (the actual service name in the codebase) already backs the Project Name dropdown. Reuse that list — no new fetch.</div>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="status-badge answered"><i data-lucide="check"></i>Answered</span> Is access checked per version or per agent?</div>
+        <div class="a"><b>Per version.</b> Each <code style="font-family:'DM Mono',monospace;font-size:11px">PublishedMetadata</code> carries its own <code style="font-family:'DM Mono',monospace;font-size:11px">projectId</code>; an agent can be published across several projects, so the dropdown gates row-by-row.</div>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="status-badge answered"><i data-lucide="check"></i>Answered</span> What disabled-button treatment should we use?</div>
+        <div class="a"><b>Reuse the existing pattern</b> — the <code style="font-family:'DM Mono',monospace;font-size:11px">&lt;span&gt;</code>-wrapped disabled button + tooltip already used for the empty-projects case in <code style="font-family:'DM Mono',monospace;font-size:11px">view-ai-agent-header.tsx</code>. Don’t invent a new one.</div>
+      </div>
+      <div class="qa">
+        <div class="q"><span class="status-badge open"><i data-lucide="help-circle"></i>Open</span> Do we track “Published By” separately from “Created By”?</div>
+        <div class="a">Which is authoritative if they diverge? Access is really a project-membership question, so likely <i>neither</i> — but confirm the data model before build.</div>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<script>
+  // ---------- State ----------
+  const state = {
+    memberships: { "Billing Ops": true, "Retention Team": false, "Onboarding": false },
+    failOpen: false,
+    detailsVersionCount: 1,
+    openDropdownId: null,
+  };
+
+  const isMember = (project) => !!state.memberships[project];
+
+  // ---------- Version datasets ----------
+  // Each version has its own project — mirrors PublishedMetadata.projectId
+  const V = {
+    billing1: [{ date: "Jun 12, 2026 3:20 PM", project: "Billing Ops" }],
+    billing3: [
+      { date: "Jun 12, 2026 3:20 PM", project: "Billing Ops" },
+      { date: "May 28, 2026 11:05 AM", project: "Retention Team" },
+      { date: "May 3, 2026 9:40 AM", project: "Onboarding" },
+    ],
+  };
+
+  const NO_ACCESS_TIP = (p) => `You don't have access to project '${p}' in AI Agents — ask a project owner to add you.`;
+  const UNVERIFIED_TIP = "Couldn't verify your AI Agents access — the link may not work.";
+  const NO_ACCESS_ANY = "You don't have access to any of these projects. Ask a project owner to add you.";
+
+  // ---------- Control renderer ----------
+  // Returns HTML for the "Open published AI agent" control given a version list + id
+  function renderControl(versions, id) {
+    const fail = state.failOpen;
+
+    // ---- Single version → link ----
+    if (versions.length === 1) {
+      const p = versions[0].project;
+      const access = isMember(p);
+      if (fail) {
+        return `<span class="open-ctl">
+          <button class="btn-open"><i data-lucide="external-link"></i>Open published AI agent</button>
+          <span class="tt"><span class="unverified"><i data-lucide="alert-triangle"></i>Unverified access</span><span class="tip">${UNVERIFIED_TIP}</span></span>
+        </span>`;
+      }
+      if (access) {
+        return `<span class="open-ctl">
+          <button class="btn-open"><i data-lucide="external-link"></i>Open published AI agent</button>
+        </span>`;
+      }
+      // disabled + tooltip (span wrapper so tooltip fires on a disabled control)
+      return `<span class="open-ctl"><span class="tt">
+        <span class="ctl-wrap"><button class="btn-open is-disabled"><i data-lucide="external-link"></i>Open published AI agent</button></span>
+        <span class="tip">${NO_ACCESS_TIP(p)}</span>
+      </span></span>`;
+    }
+
+    // ---- Multiple versions → dropdown ----
+    const anyAccess = versions.some(v => isMember(v.project));
+    const isOpen = state.openDropdownId === id;
+
+    // trigger always enabled (per the 4b decision) — even when no rows are accessible
+    const triggerExtra = fail
+      ? `<span class="tt"><span class="unverified"><i data-lucide="alert-triangle"></i>Unverified access</span><span class="tip">${UNVERIFIED_TIP}</span></span>`
+      : "";
+
+    // Rows keep today's exact format — date + icon, nothing else. The project
+    // and access reason live only in the tooltip so this stays a minimal change
+    // against the live row markup rather than adding a new label.
+    const rows = versions.map(v => {
+      const access = isMember(v.project);
+      if (fail) {
+        return `<div class="dd-item is-unverified tt" data-noop="1">
+          <span class="ver-date">${v.date}</span>
+          <i data-lucide="alert-triangle"></i>
+          <span class="tip">${UNVERIFIED_TIP}</span>
+        </div>`;
+      }
+      if (access) {
+        return `<div class="dd-item">
+          <span class="ver-date">${v.date}</span>
+          <i data-lucide="eye"></i>
+        </div>`;
+      }
+      return `<div class="dd-item is-disabled tt" data-noop="1">
+        <span class="ver-date">${v.date}</span>
+        <i data-lucide="eye"></i>
+        <span class="tip">${NO_ACCESS_TIP(v.project)}</span>
+      </div>`;
+    }).join("");
+
+    let header = "";
+    if (!fail && !anyAccess) {
+      header = `<div class="dd-header warn"><i data-lucide="alert-triangle"></i><span>${NO_ACCESS_ANY}</span></div><div class="dd-sep"></div>`;
+    } else {
+      header = `<div class="dd-header">Published Versions (${versions.length})</div><div class="dd-sep"></div>`;
+    }
+
+    return `<span class="open-ctl">
+      <span class="dd">
+        <button class="btn-open" data-dd-toggle="${id}">
+          <i data-lucide="external-link"></i>Open published AI agent
+          <i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}"></i>
+        </button>
+        <div class="dd-panel ${isOpen ? 'open' : ''}">${header}${rows}</div>
+      </span>
+      ${triggerExtra}
+    </span>`;
+  }
+
+  // ---------- Dashboard card data ----------
+  const CARDS = [
+    { topic: "Bill Explanation",    project: "Billing Ops",    by: "Sarah Chen",  date: "Jun 12, 2026 3:20 PM", tag: "Billing & Payment" },
+    { topic: "Cancel Subscription", project: "Retention Team", by: "Marcus Lee",  date: "Jun 9, 2026 10:05 AM", tag: "Retention" },
+    { topic: "Reset Password",      project: "Onboarding",     by: "Priya Nair",  date: "Jun 1, 2026 8:45 AM", tag: "Account Access" },
+  ];
+
+  // ---------- States reference data ----------
+  function statesData() {
+    return [
+      { num: "Scenario 1", title: "Single version — you're a member", desc: "One published version in a project you belong to. Simple enabled link.", versions: [{ date: "Jun 12, 2026 3:20 PM", project: "Billing Ops" }], forceMember: "Billing Ops" },
+      { num: "Scenario 2", title: "Single version — no access", desc: "One version in a project you're not in. Link disabled; hover for the reason. Status stays Published.", versions: [{ date: "Jun 12, 2026 3:20 PM", project: "Retention Team" }] },
+      { num: "Scenario 3", title: "Multiple versions — full access", desc: "Every version's project is one you belong to. Dropdown; all rows open.", versions: [{ date: "Jun 12, 2026 3:20 PM", project: "Billing Ops" }, { date: "May 28, 2026 11:05 AM", project: "Billing Ops" }] },
+      { num: "Scenario 4", title: "Multiple versions — partial access", desc: "Mixed. Accessible rows open; the rest are locked, with the project named in the tooltip.", versions: [{ date: "Jun 12, 2026 3:20 PM", project: "Billing Ops" }, { date: "May 28, 2026 11:05 AM", project: "Retention Team" }] },
+      { num: "Scenario 4b", title: "Multiple versions — no access", desc: "Trigger still opens; every row locked + a no-access header line so you know which owners to ask.", versions: [{ date: "Jun 12, 2026 3:20 PM", project: "Retention Team" }, { date: "May 28, 2026 11:05 AM", project: "Onboarding" }] },
+    ];
+  }
+
+  // ---------- Render everything ----------
+  function render() {
+    // Scenario 1 details control
+    const dpVersions = state.detailsVersionCount === 1 ? V.billing1 : V.billing3;
+    document.getElementById("dp-control").innerHTML = renderControl(dpVersions, "dp");
+
+    // States strip — each card gets an isolated membership context via a wrapper that
+    // reads real memberships, except Scenario 1 which forces its project on for clarity.
+    const strip = document.getElementById("states-strip");
+    strip.innerHTML = statesData().map((s, i) => {
+      // temporarily honor forceMember for scenario 1 so it always demos the enabled path
+      const savedMemberships = { ...state.memberships };
+      if (s.forceMember) state.memberships[s.forceMember] = true;
+      const ctl = renderControl(s.versions, "st" + i);
+      state.memberships = savedMemberships;
+      return `<div class="state-card">
+        <div><div class="sc-num">${s.num}</div><div class="sc-title">${s.title}</div></div>
+        <div class="sc-desc">${s.desc}</div>
+        <div class="sc-ctl">${ctl}</div>
+      </div>`;
+    }).join("");
+
+    // Dashboard cards
+    document.getElementById("cards-strip").innerHTML = CARDS.map((c, i) =>
+      `<div class="agent-card">
+        <span class="tagline"><i data-lucide="sparkles"></i>Automation Opportunity</span>
+        <h3>${c.topic}</h3>
+        <div class="row"><span class="k">Project:</span> ${c.project}</div>
+        <div class="row"><span class="k">Published by:</span> ${c.by} · ${c.date}</div>
+        <div class="footer">
+          <span class="badge">Published</span>
+          ${renderControl([{ date: c.date, project: c.project }], "card" + i)}
+        </div>
+      </div>`
+    ).join("");
+
+    lucide.createIcons();
+  }
+
+  // ---------- Event wiring ----------
+  document.getElementById("membership-chips").addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip"); if (!chip) return;
+    const p = chip.dataset.project;
+    state.memberships[p] = !state.memberships[p];
+    chip.setAttribute("aria-pressed", String(state.memberships[p]));
+    state.openDropdownId = null;
+    render();
+  });
+
+  document.getElementById("failmode-seg").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.failOpen = b.dataset.mode === "fail";
+    [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    state.openDropdownId = null;
+    render();
+  });
+
+  document.getElementById("versioncount-seg").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.detailsVersionCount = Number(b.dataset.count);
+    [...e.currentTarget.children].forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    state.openDropdownId = null;
+    render();
+  });
+
+  // Dropdown open/close + swallow clicks on disabled rows
+  document.addEventListener("click", (e) => {
+    const toggle = e.target.closest("[data-dd-toggle]");
+    if (toggle) {
+      const id = toggle.dataset.ddToggle;
+      state.openDropdownId = state.openDropdownId === id ? null : id;
+      render();
+      return;
+    }
+    if (e.target.closest("[data-noop]")) { e.preventDefault(); return; }
+    if (!e.target.closest(".dd-panel")) {
+      if (state.openDropdownId !== null) { state.openDropdownId = null; render(); }
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
