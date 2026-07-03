@@ -52,7 +52,13 @@ Mirrors these real components (repo `nice-illuminate/csa-agentic-analytics-ao-we
 | 2 | 1 version | No access | Single link | Disabled + tooltip naming the project |
 | 3 | Multiple versions | Access to all projects | Dropdown | Trigger enabled; every item enabled |
 | 4 | Multiple versions | Access to some | Dropdown | Trigger enabled; accessible items enabled, inaccessible items disabled + per-item tooltip naming the project |
-| 4b | Multiple versions | Access to **none** | Dropdown | **Trigger disabled** + single tooltip: "You don't have access to any of the projects this agent is published to." |
+| 4b | Multiple versions | Access to **none** | Dropdown | **Trigger still enabled and opens.** Every item disabled + per-item tooltip naming its project, plus a header line inside the dropdown: "You don't have access to any of these projects." |
+
+**Design principle — the dropdown is consistent.** For multiple versions the trigger *always* opens, regardless of
+access. Access is gated **per row**, never at the trigger. This collapses scenarios 3 / 4 / 4b into one behavior that
+only varies row-by-row — one mental model for the user, and it mirrors the single-version rule (Scenario 2 disables the
+*action*, it never hides the control). The no-access case (4b) adds an in-dropdown header line for a summary, but still
+shows every version and its project so the user knows which owner to ask.
 
 **Fail-open overlay** (applies over all of the above): if the membership check itself fails/unavailable, controls stay
 **enabled** with a small amber "unverified access" marker + tooltip, rather than silently disabling a possibly-valid
@@ -79,8 +85,9 @@ File: `prototype/ao-open-published-project-check.html`
    title `Topic: Bill Explanation`, Project Name field, Created By / Creation Date / Status badge) with a
    **"1 version ↔ 3 versions" switcher** so reviewers see both the single-link and dropdown forms live, reacting to the
    toggles.
-3. **"All four states" reference strip** — scenarios 1, 2, 3, 4 (and 4b) rendered as compact, labeled, live examples
-   side-by-side so developers can eyeball every state at once.
+3. **States reference strip** — scenarios 1, 2, 3, 4 and 4b rendered as compact, labeled, live examples side-by-side so
+   developers can eyeball every state at once — including the 4b dropdown opened with all rows disabled + the no-access
+   header line.
 4. **Scenario 2 — dashboard cards** — 3 topic cards, each published by a *different* creator to a *different* project
    (`Bill Explanation`/Billing Ops/Sarah Chen, `Cancel Subscription`/Retention Team/Marcus Lee,
    `Reset Password`/Onboarding/Priya Nair), single-button controls. Teaching point: a card published by someone else to
